@@ -5,86 +5,87 @@ using UnityEngine.UI;
 
 public class Spirograph : MonoBehaviour
 {
-    [Range(0.0f, 1.0f)]                   public float delaySeconds    = 0.001f;
-    [Range(minNumCircles, maxNumCircles)] public int   numberOfCircles = 2;
-    [Range(minRatio,      maxRatio)]      public float smallerCircleRadiusRatio;
+    [Range(0.0f, 1.0f)] public float DelaySeconds       = 0.001f;
+    [Range(0, 20000)]   public int   NumberOfIterations = 2;
+
+    [Range(_minNumberOfCircles, _maxNumberOfCircles)] public int   NumberOfCircles    = 2;
+    [Range(_minCircleRatio,     _maxCircleRatio)]     public float SmallerCircleRadiusRatio;
 
 
 
-    [SerializeField] private GameObject CirclePrefab;
-    [SerializeField] private GameObject PenPointPrefab;
-    [SerializeField] private Slider     CircleRatioSlider;
-    [SerializeField] private Slider     PenPositionSlider;
-    [SerializeField] private Slider     PenWidthSlider;
-    [SerializeField] private Dropdown   NumCircDropdown;
-    [SerializeField] private Button     drawButton;
-    [SerializeField] private Material   largeCircleMat;
-    [SerializeField] private Material   smallCirclesMat;
-    [SerializeField] private Sprite     largeCircleSprite;
-    [SerializeField] private Sprite     smallCircleSprite;
+    [SerializeField] private GameObject _circlePrefab;
+    [SerializeField] private GameObject _penPointPrefab;
+    [SerializeField] private Slider     _circlesRatioSlider;
+    [SerializeField] private Slider     _penPositionSlider;
+    [SerializeField] private Slider     _penWidthSlider;
+    [SerializeField] private Dropdown   _numberOfCirclesDropdown;
+    [SerializeField] private Button     _drawButton;
+    [SerializeField] private Material   _largeCircleMat;
+    [SerializeField] private Material   _smallCirclesMat;
+    [SerializeField] private Sprite     _largeCircleSprite;
+    [SerializeField] private Sprite     _smallCircleSprite;
 
-    private const int   minNumCircles = 2;
-    private const int   maxNumCircles = 4;
-    private const float minRatio      = 0.1f;
-    private const float maxRatio      = 0.9f;
+    private const int    _minNumberOfCircles = 2;
+    private const int    _maxNumberOfCircles = 4;
+    private const float  _minCircleRatio     = 0.1f;
+    private const float  _maxCircleRatio     = 0.9f;
 
 
-    private  GameObject[] Circles;
-    private  GameObject   penPoint;
-
-    private int   indexOfLastCircle;
-    private float angleIncr      = 1.1f;
-    private bool  drawing;
-    private int   currentIteration;
-    private float largeCircleRadius;
-    private int   batchSize;
-    private int   batchSizeMin   = 8;
-    private int   batchSizeMax   = 30;
-    private int   numIterations  = 12000;
+    private float        _angleIncrement      = 1.1f;
+    private int          _batchSize;
+    private int          _batchSizeMin        = 8;
+    private int          _batchSizeMax        = 30;
+    private GameObject[] _circles;
+    private int          _currentIteration;
+    private int          _indexOfLastCircle;
+    private bool         _isDrawing           = false;
+    private float        _largeCircleRadius;
+    private int          _numberOfIterations  = 12000;
+    private GameObject   _penPoint;
 
 
 
     void Start()
     {
-        smallerCircleRadiusRatio = CircleRatioSlider.value;
+        SmallerCircleRadiusRatio = _circlesRatioSlider.value;
 
         // Construct Circle hierarchy
-        Circles = new GameObject[numberOfCircles];
+        _circles = new GameObject[NumberOfCircles];
 
-        Circles[0] = Instantiate(CirclePrefab);
-        GameObject first = Circles[0];
+        _circles[0] = Instantiate(_circlePrefab);
+        GameObject first = _circles[0];
         first.GetComponent<Circle>().center = transform.position;
-        first.GetComponent<Circle>().angleIncrement = angleIncr;
-        first.GetComponent<SpriteRenderer>().material = largeCircleMat;
-        first.GetComponent<SpriteRenderer>().sprite = largeCircleSprite;
+        first.GetComponent<Circle>().angleIncrement = _angleIncrement;
+        first.GetComponent<SpriteRenderer>().material = _largeCircleMat;
+        first.GetComponent<SpriteRenderer>().sprite = _largeCircleSprite;
         first.GetComponent<SpriteRenderer>().sortingLayerName = "Sun";
 
-        indexOfLastCircle = numberOfCircles - 1;
+        _indexOfLastCircle = NumberOfCircles - 1;
 
-        for (int i = 1; i < numberOfCircles; i++)
+        for (int i = 1; i < NumberOfCircles; i++)
         {
-            Circles[i] = Instantiate(CirclePrefab);
-            GameObject current = Circles[i];
-            current.transform.SetParent(Circles[i - 1].transform, false);
-            current.GetComponent<SpriteRenderer>().material = smallCirclesMat;
-            current.GetComponent<SpriteRenderer>().sprite = smallCircleSprite;
+            _circles[i] = Instantiate(_circlePrefab);
+            GameObject current = _circles[i];
+            current.transform.SetParent(_circles[i - 1].transform, false);
+            current.GetComponent<SpriteRenderer>().material = _smallCirclesMat;
+            current.GetComponent<SpriteRenderer>().sprite = _smallCircleSprite;
             current.GetComponent<SpriteRenderer>().sortingOrder = i;
             float sign = 1 - (i % 2) * 2; // Mathf.Pow(-1, i);
-            current.GetComponent<Circle>().angleIncrement = sign * (angleIncr / Mathf.Pow(smallerCircleRadiusRatio, i));
+            current.GetComponent<Circle>().angleIncrement = sign * (_angleIncrement / Mathf.Pow(SmallerCircleRadiusRatio, i));
         }
 
-        for (int i = 1; i < numberOfCircles; i++)
+        for (int i = 1; i < NumberOfCircles; i++)
         {
-            Circle circleComp = Circles[i].GetComponent<Circle>();
-            circleComp.SetRadius(smallerCircleRadiusRatio);
-            float centerY = 4 - 4*Mathf.Pow(smallerCircleRadiusRatio, i);
+            Circle circleComp = _circles[i].GetComponent<Circle>();
+            circleComp.SetRadius(SmallerCircleRadiusRatio);
+            float centerY = 4 - 4*Mathf.Pow(SmallerCircleRadiusRatio, i);
             circleComp.SetCenter(new Vector3(0, centerY, 0) + transform.position);
         }
 
-        penPoint = Instantiate(PenPointPrefab);
-        penPoint.transform.SetParent(Circles[Circles.Length - 1].transform, false);
+        _penPoint = Instantiate(_penPointPrefab);
+        _penPoint.transform.SetParent(_circles[_circles.Length - 1].transform, false);
         SetPenPointPosition();
-        NumCircDropdown.value = 1;
+        _numberOfCirclesDropdown.value = 1;
         OnNumberOfCirclesValueChanged();
 
     }
@@ -93,29 +94,39 @@ public class Spirograph : MonoBehaviour
     public void RunDrawing()
     {
         SetInteractable(false);
-        currentIteration = 0;
-        drawing = true;
-        penPoint.GetComponent<PenPoint>().SetPositionArray(numIterations);
+
+        _currentIteration = 0;
+        _isDrawing        = true;
+
+        _penPoint.GetComponent<PenPoint>().SetPositionArray(_numberOfIterations);
+
         StartCoroutine(Draw());
 
+        SetInteractable(true);
     }
 
 
-    void SetInteractable(bool condition)
+    private void SetInteractable(bool condition)
     {
-        drawButton       .interactable = condition;
-        CircleRatioSlider.interactable = condition;
-        PenPositionSlider.interactable = condition;
-        NumCircDropdown  .interactable = condition;
+        _drawButton             .interactable = condition;
+        _circlesRatioSlider     .interactable = condition;
+        _penPositionSlider      .interactable = condition;
+        _numberOfCirclesDropdown.interactable = condition;
 
     }
+
+
+    public void SetIterations()
+    {
+
+    }   // setIterations()
 
 
     public void SetPenPointPosition()
     {
-        PenPoint penComp = penPoint.GetComponent<PenPoint>();
-        Circle lastCircleComp = Circles[indexOfLastCircle].GetComponent<Circle>();
-        float penPointPosY = PenPositionSlider.value * Mathf.Pow(smallerCircleRadiusRatio, indexOfLastCircle) + Circles[indexOfLastCircle].transform.position.y;
+        PenPoint penComp = _penPoint.GetComponent<PenPoint>();
+        Circle lastCircleComp = _circles[_indexOfLastCircle].GetComponent<Circle>();
+        float penPointPosY = _penPositionSlider.value * Mathf.Pow(SmallerCircleRadiusRatio, _indexOfLastCircle) + _circles[_indexOfLastCircle].transform.position.y;
         penComp.SetCenter(new Vector3(0, penPointPosY, 0) + transform.position);
     }
 
@@ -126,8 +137,8 @@ public class Spirograph : MonoBehaviour
 
     public void Reset()
     {
-        drawing = false;
-        penPoint.GetComponent<PenPoint>().ResetCurve();
+        _isDrawing = false;
+        _penPoint.GetComponent<PenPoint>().ResetCurve();
         SetPenPointPosition();
         ToggleSpritesVisible(true);
         OnSmallerCircleRatioChanged();
@@ -138,59 +149,59 @@ public class Spirograph : MonoBehaviour
 
     protected IEnumerator Draw()
     {
-        while (currentIteration < numIterations && drawing)
+        while (_currentIteration < _numberOfIterations && _isDrawing)
         {
-            int max = (currentIteration + batchSize < numIterations ? currentIteration + batchSize : numIterations);
+            int max = (_currentIteration + _batchSize < _numberOfIterations ? _currentIteration + _batchSize : _numberOfIterations);
 
-            for (int i = currentIteration; i < max; i++)
+            for (int i = _currentIteration; i < max; i++)
             {
-                for (int j = Circles.Length - 1; j >= 0; j--)
+                for (int j = _circles.Length - 1; j >= 0; j--)
                 {
-                    Circle circleComp = Circles[j].GetComponent<Circle>();
+                    Circle circleComp = _circles[j].GetComponent<Circle>();
                     circleComp.Iterate();
 
                 }
-                penPoint.GetComponent<PenPoint>().StorePoint(i);
+                _penPoint.GetComponent<PenPoint>().StorePoint(i);
             }
 
             // Speed up drawing by increasing batchsize
-            currentIteration += batchSize;
-            currentIteration = (currentIteration < numIterations ? currentIteration : numIterations);
-            penPoint.GetComponent<PenPoint>().DrawCurve(currentIteration);
-            int batchSizeDelta = Mathf.RoundToInt(Mathf.Sqrt(currentIteration * 0.1f)); //Mathf.RoundToInt(Mathf.Log10(10 + currentIteration));
-            batchSize = (batchSizeMin + batchSizeDelta < batchSizeMax ? batchSizeMin + batchSizeDelta : batchSizeMax);
+            _currentIteration += _batchSize;
+            _currentIteration = (_currentIteration < _numberOfIterations ? _currentIteration : _numberOfIterations);
+            _penPoint.GetComponent<PenPoint>().DrawCurve(_currentIteration);
+            int batchSizeDelta = Mathf.RoundToInt(Mathf.Sqrt(_currentIteration * 0.1f)); //Mathf.RoundToInt(Mathf.Log10(10 + currentIteration));
+            _batchSize = (_batchSizeMin + batchSizeDelta < _batchSizeMax ? _batchSizeMin + batchSizeDelta : _batchSizeMax);
 
-            yield return new WaitForSeconds(delaySeconds);
+            yield return new WaitForSeconds(DelaySeconds);
         }
 
-        ToggleSpritesVisible(!drawing);
+        ToggleSpritesVisible(!_isDrawing);
 
     }
 
 
     void ToggleSpritesVisible(bool condition)
     {
-        for (int i = 1; i < Circles.Length; i++)
+        for (int i = 1; i < _circles.Length; i++)
         {
-            Circles[i].GetComponent<SpriteRenderer>().enabled = condition;
+            _circles[i].GetComponent<SpriteRenderer>().enabled = condition;
         }
 
-        penPoint.GetComponent<PenPoint>().SpriteVisible(condition);
+        _penPoint.GetComponent<PenPoint>().SpriteVisible(condition);
 
     }
 
 
     public void OnNumberOfCirclesValueChanged()
     {
-        int index = NumCircDropdown.value + 2;
+        int index = _numberOfCirclesDropdown.value + 2;
 
-        for (int i = 0; i < Circles.Length; i++)
+        for (int i = 0; i < _circles.Length; i++)
         {
-            Circles[i].SetActive(i < index);
+            _circles[i].SetActive(i < index);
         }
 
-        penPoint.transform.SetParent(Circles[index - 1].transform, false);
-        indexOfLastCircle = index - 1;
+        _penPoint.transform.SetParent(_circles[index - 1].transform, false);
+        _indexOfLastCircle = index - 1;
         SetPenPointPosition();
 
     }
@@ -198,16 +209,16 @@ public class Spirograph : MonoBehaviour
 
     public void OnSmallerCircleRatioChanged()
     {
-        smallerCircleRadiusRatio = CircleRatioSlider.value;
+        SmallerCircleRadiusRatio = _circlesRatioSlider.value;
 
-        for (int i = 1; i < numberOfCircles; i++)
+        for (int i = 1; i < NumberOfCircles; i++)
         {
-            Circle circleComp = Circles[i].GetComponent<Circle>();
-            circleComp.SetRadius(smallerCircleRadiusRatio);
-            float centerY = 4 - 4 * Mathf.Pow(smallerCircleRadiusRatio, i);
+            Circle circleComp = _circles[i].GetComponent<Circle>();
+            circleComp.SetRadius(SmallerCircleRadiusRatio);
+            float centerY = 4 - 4 * Mathf.Pow(SmallerCircleRadiusRatio, i);
             circleComp.SetCenter(new Vector3(0, centerY, 0) + transform.position);
             float sign = Mathf.Pow(-1, i);
-            Circles[i].GetComponent<Circle>().angleIncrement = sign * (angleIncr / Mathf.Pow(smallerCircleRadiusRatio, i));
+            _circles[i].GetComponent<Circle>().angleIncrement = sign * (_angleIncrement / Mathf.Pow(SmallerCircleRadiusRatio, i));
         }
 
         SetPenPointPosition();

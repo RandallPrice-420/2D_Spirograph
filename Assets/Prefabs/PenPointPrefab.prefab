@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 251259503842167688}
   - component: {fileID: 6813396428520422061}
   m_Layer: 0
-  m_Name: PenPoint
+  m_Name: PenPointPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
