@@ -1,19 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
 
 public class PenPoint : MonoBehaviour
 {
     public Vector3 center;
+
+
     SpriteRenderer spriteRenderer;
-    bool displaySprite;
-    LineRenderer lineRenderer;
-    Vector3[] positionArray;
+    bool           displaySprite;
+    LineRenderer   lineRenderer;
+    Vector3[]      positionArray;
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer   = GetComponent<LineRenderer>();
     }
 
     public void SetPositionArray(int size)
@@ -23,13 +24,13 @@ public class PenPoint : MonoBehaviour
 
     public void StorePoint(int index)
     {
-        Vector3 newPosition = transform.position;
+        Vector3 newPosition  = transform.position;
         positionArray[index] = newPosition;
     }
 
     public void SetCenter(Vector3 center)
     {
-        this.center = center;
+        this.center        = center;
         transform.position = center;
     }
 
@@ -49,4 +50,6 @@ public class PenPoint : MonoBehaviour
     {
         spriteRenderer.enabled = condition;
     }
+
+
 }
