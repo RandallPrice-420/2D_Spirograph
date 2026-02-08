@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1033906417443317744}
   - component: {fileID: 8973990605264906660}
   - component: {fileID: 251259503842167688}
-  - component: {fileID: 3203715452563022553}
+  - component: {fileID: 7988779752158032983}
   m_Layer: 0
   m_Name: CirclePrefab
   m_TagString: Untagged
@@ -194,7 +194,7 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 0
---- !u!114 &3203715452563022553
+--- !u!114 &7988779752158032983
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -206,6 +206,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0797ecc5608d4a748a99d79cf7fb662e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
+  angleIncrement: 0
   center: {x: 0, y: 0, z: 0}
-  angleIncrement: 1.4
+  radius: 0
