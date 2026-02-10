@@ -54,6 +54,8 @@ public class Circle : MonoBehaviour
     // -------------------------------------------------------------------------
     public void Iterate()
     {
+        Debug.Log($"Circle.Iterate():  angleIncrement = {angleIncrement}");
+
         transform.Rotate(0f, 0f, angleIncrement);
 
     }   // Iterate()
@@ -69,6 +71,8 @@ public class Circle : MonoBehaviour
     // -------------------------------------------------------------------------
     public void SetCenter(Vector3 center)
     {
+        Debug.Log($"Circle.SetCenter():  center = {center}");
+
         this.center        = center;
         transform.position = center;
 
@@ -115,6 +119,8 @@ public class Circle : MonoBehaviour
     // -------------------------------------------------------------------------
     public void SpriteVisible(bool condition)
     {
+        Debug.Log($"Circle.SpriteVisible():  condition = {condition}");
+
         _spriteRenderer.enabled = condition;
 
     }   //  SpriteVisible()
@@ -137,7 +143,9 @@ public class Circle : MonoBehaviour
     // -------------------------------------------------------------------------
     private void Start()
     {
-        _spriteRenderer    = GetComponent<SpriteRenderer>();
+        Debug.Log($"Circle.Start():  center = {center}");
+
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         transform.position = center;
 
         SetRadius(radius);

@@ -41,11 +41,12 @@ public class Spirograph : MonoBehaviour
     //   _penWidthValue
     //   _numberOfCirclesDropdown
     //   _drawButton
+    //   _inputIterations
+    //   _currentIterationValue
     //   _largeCircleMat
     //   _smallCirclesMat
     //   _largeCircleSprite
     //   _smallCircleSprite
-    //   _tmp_InputIterations
     // -------------------------------------------------------------------------
 
     #region .  Private Serialize Variables  .
@@ -60,11 +61,12 @@ public class Spirograph : MonoBehaviour
     [SerializeField] private TMP_Text       _penWidthValue;
     [SerializeField] private TMP_Dropdown   _numberOfCirclesDropdown;
     [SerializeField] private Button         _drawButton;
+    [SerializeField] private TMP_InputField _inputIterations;
+    [SerializeField] private TMP_Text       _currentIterationValue;
     [SerializeField] private Material       _largeCircleMat;
     [SerializeField] private Material       _smallCirclesMat;
     [SerializeField] private Sprite         _largeCircleSprite;
     [SerializeField] private Sprite         _smallCircleSprite;
-    [SerializeField] private TMP_InputField _tmp_InputIterations;
     #endregion
 
 
@@ -93,6 +95,7 @@ public class Spirograph : MonoBehaviour
     //   _indexOfLastCircle
     //   _isDrawing
     //   _numberOfIterations
+    //   _penPoint
     // -------------------------------------------------------------------------
 
     #region .  Private Variables  .
@@ -139,6 +142,8 @@ public class Spirograph : MonoBehaviour
     // -------------------------------------------------------------------------
     public void OnCirclesRatioChanged()
     {
+        Debug.Log($"Spirograph.OnCirclesRatioChanged()");
+
         SmallCircleRadiusRatio  = _circlesRatioSlider.value;
         _circlesRatioValue.text = _circlesRatioSlider.value.ToString("0.00");
 
@@ -172,6 +177,8 @@ public class Spirograph : MonoBehaviour
     {
         NumberOfCircles = int.Parse(_numberOfCirclesDropdown.captionText.text);
 
+        Debug.Log($"Spirograph.OnNumberOfCirclesValueChanged():  NumberOfCircles = {NumberOfCircles}");
+
         int index = _numberOfCirclesDropdown.value + 2;
 
         for (int i = 0; i < _circles.Length; i++)
@@ -199,6 +206,8 @@ public class Spirograph : MonoBehaviour
     {
         _penPositionValue.text = _penPositionSlider.value.ToString("0.00");
 
+        Debug.Log($"Spirograph.OnNumberOfCirclesValueChanged():  _penPositionValue = {_penPositionValue}");
+
         float penPointPosY     = (_penPositionSlider.value * Mathf.Pow(SmallCircleRadiusRatio, _indexOfLastCircle))
                                + _circles[_indexOfLastCircle].transform.position.y;
 
@@ -218,6 +227,9 @@ public class Spirograph : MonoBehaviour
     public void OnPenWidthChanged()
     {
         _penWidthValue.text = _penWidthSlider.value.ToString("0.00");
+
+        Debug.Log($"Spirograph.OnPenWidthChanged():  _penWidthValue = {_penWidthValue}");
+
         _penPoint.GetComponent<PenPoint>().SetPenWidth(_penWidthSlider.value);
 
     }   //  OnPenWidthChanged()
@@ -233,14 +245,16 @@ public class Spirograph : MonoBehaviour
     // -------------------------------------------------------------------------
     public void Reset()
     {
+        Debug.Log($"Spirograph.Reset()");
+
         _isDrawing = false;
 
         _penPoint.GetComponent<PenPoint>().ResetCurve();
 
         OnPenPositionChanged();
-        ToggleSpritesVisible(true);
         OnCirclesRatioChanged();
         SetInteractable(true);
+        ToggleSpritesVisible(true);
 
     }   // Reset()
     #endregion
@@ -255,6 +269,8 @@ public class Spirograph : MonoBehaviour
     // -------------------------------------------------------------------------
     public void RunDrawing()
     {
+        Debug.Log($"Spirograph.RunDrawing()");
+
         SetInteractable(false);
 
         _currentIteration = 0;
@@ -296,15 +312,15 @@ public class Spirograph : MonoBehaviour
         _penWidthValue    .text = _penWidthSlider    .value.ToString("0.00");
 
         // Set the content type to Integer Number (no decimal).
-        _tmp_InputIterations.contentType    = TMP_InputField.ContentType.IntegerNumber;
-        _tmp_InputIterations.characterLimit = 5;
-        _tmp_InputIterations.ForceLabelUpdate();
+        _inputIterations.contentType    = TMP_InputField.ContentType.IntegerNumber;
+        _inputIterations.characterLimit = 5;
+        _inputIterations.ForceLabelUpdate();
 
         // Subscribe to value change event.
         //_numberOfCirclesDropdown.onValueChanged.AddListener(OnNumberOfCirclesValueChanged);
 
         // Subscribe to end edit event.
-        _tmp_InputIterations.onEndEdit.AddListener(OnInputFieldEndEdit);
+        _inputIterations.onEndEdit.AddListener(OnInputFieldEndEdit);
 
     }   // Awake()
     #endregion
@@ -321,7 +337,9 @@ public class Spirograph : MonoBehaviour
     {
         while (_currentIteration < _numberOfIterations && _isDrawing)
         {
-            int max = (_currentIteration + _batchSize < _numberOfIterations ? _currentIteration + _batchSize : _numberOfIterations);
+            int max = (_currentIteration + _batchSize < _numberOfIterations)
+                    ?  _currentIteration + _batchSize
+                    :  _numberOfIterations;
 
             for (int i = _currentIteration; i < max; i++)
             {
@@ -334,14 +352,21 @@ public class Spirograph : MonoBehaviour
                 _penPoint.GetComponent<PenPoint>().StorePoint(i);
             }
 
-            // Speed up drawing by increasing batchsize
+            // Speed up drawing by increasing batchsize.
             _currentIteration += _batchSize;
-            _currentIteration = (_currentIteration < _numberOfIterations ? _currentIteration : _numberOfIterations);
+            _currentIteration  = (_currentIteration < _numberOfIterations)
+                               ?  _currentIteration
+                               :  _numberOfIterations;
+            
+            _currentIterationValue.text = _currentIteration.ToString();
 
             _penPoint.GetComponent<PenPoint>().DrawCurve(_currentIteration);
 
-            int batchSizeDelta = Mathf.RoundToInt(Mathf.Sqrt(_currentIteration * 0.1f)); //Mathf.RoundToInt(Mathf.Log10(10 + currentIteration));
-            _batchSize = (_batchSizeMin + batchSizeDelta < _batchSizeMax ? _batchSizeMin + batchSizeDelta : _batchSizeMax);
+            int batchSizeDelta = Mathf.RoundToInt(Mathf.Sqrt(_currentIteration * 0.1f));    // Mathf.RoundToInt(Mathf.Log10(10 + currentIteration));
+
+            _batchSize = (_batchSizeMin + batchSizeDelta < _batchSizeMax)
+                       ?  _batchSizeMin + batchSizeDelta
+                       :  _batchSizeMax;
 
             yield return new WaitForSeconds(DelaySeconds);
         }
@@ -362,7 +387,7 @@ public class Spirograph : MonoBehaviour
     private void OnDestroy()
     {
         // Always unsubscribe to prevent memory leaks.
-        _tmp_InputIterations    .onValueChanged.RemoveListener(OnInputFieldEndEdit);
+        _inputIterations    .onValueChanged.RemoveListener(OnInputFieldEndEdit);
 
     }   //  OnDestroy()
     #endregion
@@ -414,9 +439,9 @@ public class Spirograph : MonoBehaviour
     {
         _numberOfCirclesDropdown.SetValueWithoutNotify(NumberOfCircles);
 
-        NumberOfCircles        = int.Parse(_numberOfCirclesDropdown.options[_numberOfCirclesDropdown.value].text);
-        _numberOfIterations    = int.Parse(_tmp_InputIterations.text);
         SmallCircleRadiusRatio = _circlesRatioSlider.value;
+        NumberOfCircles        = int.Parse(_numberOfCirclesDropdown.options[_numberOfCirclesDropdown.value].text);
+        _numberOfIterations    = int.Parse(_inputIterations.text);
 
         // Construct Circle hierarchy
         _circles    = new GameObject[NumberOfCircles];

@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.33, y: 0.33, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -207,7 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 742793be768cd584bb2c628e732563f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  center: {x: 0, y: 0, z: 0}
+  Center: {x: 0, y: 0, z: 0}
   PenWidth: 0
   MaterialColorStart: {fileID: 2100000, guid: 2ecd01d09ab304444a0f288ad2c2f002, type: 2}
-  MaterialColorEnd: {fileID: 2100000, guid: c7008c5459cac294da20f253fdf73fa4, type: 2}
+  MaterialColorEnd: {fileID: 2100000, guid: 2ecd01d09ab304444a0f288ad2c2f002, type: 2}

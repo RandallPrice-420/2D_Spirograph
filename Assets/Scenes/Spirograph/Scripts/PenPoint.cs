@@ -63,6 +63,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     public void DrawCurve(int count)
     {
+        Debug.Log($"PenPoint.DrawCurve():  count = {count}");
+
         _lineRenderer.positionCount = count;
         _lineRenderer.SetPositions(_positionArray);
 
@@ -79,6 +81,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     public void ResetCurve()
     {
+        Debug.Log($"PenPoint.ResetCurve()");
+
         _positionArray = new Vector3[0];
         DrawCurve(_positionArray.Length);
 
@@ -95,6 +99,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     public void SetCenter(Vector3 center)
     {
+        Debug.Log($"PenPoint.SetCenter():  center = {center}");
+
         this.Center        = center;
         transform.position = center;
 
@@ -111,6 +117,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     public void SetPenColor(Material material, Color colorStart, Color colorEnd)
     {
+        Debug.Log($"PenPoint.SetPenColor():  colorStart = {colorStart}, colorEnd = {colorEnd}, material = {material}");
+
         // Set material and color for visibility.
         _lineRenderer.material   = new Material(Shader.Find("Sprites/Default"));
         _lineRenderer.startColor = colorStart;
@@ -129,6 +137,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     public void SetPenWidth(float width)
     {
+        Debug.Log($"PenPoint.SetPenWidth():  width = {width}");
+
         // Set width (replaces SetWidth).
         _lineRenderer.startWidth = width;
         _lineRenderer.endWidth   = width;
@@ -146,6 +156,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     public void SetPositionArray(int size)
     {
+        Debug.Log($"PenPoint.SetPositionArray():  size = {size}");
+
         _positionArray = new Vector3[size];
 
     }   // SetPositionArray()
@@ -161,6 +173,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     public void SpriteVisible(bool condition)
     {
+        Debug.Log($"PenPoint.SpriteVisible():  condition = {condition}");
+
         _spriteRenderer.enabled = condition;
 
     }   // SpriteVisible()
@@ -176,6 +190,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     public void StorePoint(int index)
     {
+        Debug.Log($"PenPoint.StorePoint():  index = {index}");
+
         Vector3 newPosition   = transform.position;
         _positionArray[index] = newPosition;
 
@@ -199,6 +215,8 @@ public class PenPoint : MonoBehaviour
     // -------------------------------------------------------------------------
     private void Start()
     {
+        Debug.Log($"PenPoint.Start()");
+
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _lineRenderer   = GetComponent<LineRenderer>();
 
